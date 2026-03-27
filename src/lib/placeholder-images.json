@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-city-grid",
+      "description": "3D isometric city grid visualization with data overlays",
+      "imageUrl": "https://picsum.photos/seed/urban1/1200/800",
+      "imageHint": "isometric city grid"
+    },
+    {
+      "id": "risk-map-feature",
+      "description": "Hyperlocal risk map visualization",
+      "imageUrl": "https://picsum.photos/seed/map1/800/600",
+      "imageHint": "city heat map"
+    },
+    {
+      "id": "scenario-planning",
+      "description": "Scenario planning dashboard interface",
+      "imageUrl": "https://picsum.photos/seed/data1/800/600",
+      "imageHint": "data dashboard"
+    },
+    {
+      "id": "stakeholder-reports",
+      "description": "Professional climate resilience report preview",
+      "imageUrl": "https://picsum.photos/seed/report1/800/600",
+      "imageHint": "document report"
+    },
+    {
+      "id": "city-logo-1",
+      "description": "Metropolis City Seal",
+      "imageUrl": "https://picsum.photos/seed/logo1/200/100",
+      "imageHint": "city seal"
+    },
+    {
+      "id": "integration-logo-1",
+      "description": "NOAA Data Source",
+      "imageUrl": "https://picsum.photos/seed/noaa/200/800",
+      "imageHint": "weather logo"
+    }
+  ]
 }
