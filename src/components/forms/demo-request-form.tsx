@@ -127,23 +127,21 @@ export function DemoRequestForm() {
             <p className="text-sm text-muted-foreground mb-4">Select all that apply to your current planning needs.</p>
             <div className="grid gap-3">
               {challengesOptions.map((opt) => (
-                <div key={opt.id} className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors cursor-pointer" 
-                  onClick={() => {
-                    const current = watch("challenges")
-                    if (current.includes(opt.id)) {
-                      setValue("challenges", current.filter(id => id !== opt.id))
-                    } else {
-                      setValue("challenges", [...current, opt.id])
-                    }
-                  }}>
+                <div key={opt.id} className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent transition-colors">
                   <Checkbox 
+                    id={`challenge-${opt.id}`}
                     checked={currentChallenges.includes(opt.id)}
                     onCheckedChange={(checked) => {
-                      if (checked) setValue("challenges", [...currentChallenges, opt.id])
-                      else setValue("challenges", currentChallenges.filter(id => id !== opt.id))
+                      if (checked) {
+                        setValue("challenges", [...currentChallenges, opt.id])
+                      } else {
+                        setValue("challenges", currentChallenges.filter(id => id !== opt.id))
+                      }
                     }}
                   />
-                  <Label className="cursor-pointer">{opt.label}</Label>
+                  <Label htmlFor={`challenge-${opt.id}`} className="flex-1 cursor-pointer font-medium py-1">
+                    {opt.label}
+                  </Label>
                 </div>
               ))}
               {errors.challenges && <p className="text-destructive text-sm">{errors.challenges.message}</p>}
