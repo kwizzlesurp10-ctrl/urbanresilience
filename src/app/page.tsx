@@ -18,8 +18,9 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/sections/navbar"
-import { DemoRequestForm } from "@/components/forms/demo-request-form"
 import { RiskAssessmentTool } from "@/components/ai/risk-assessment-tool"
+import { ScenarioPlanningTool } from "@/components/ai/scenario-planning-tool"
+import { GrantReportingTool } from "@/components/ai/grant-reporting-tool"
 import { 
   Accordion, 
   AccordionContent, 
@@ -48,11 +49,11 @@ export default function LandingPage() {
               Urban Resilience AI equips city planners with hyperlocal climate analytics, predictive scenario modeling, and stakeholder-ready reports to build future-proof infrastructure.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="h-14 px-8 bg-primary text-primary-foreground text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-                Request Your City Risk Demo
+              <Button asChild className="h-14 px-8 bg-primary text-primary-foreground text-lg font-bold rounded-full hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+                <Link href="/onboarding">Request Your City Risk Demo</Link>
               </Button>
-              <Button variant="ghost" className="h-14 px-8 text-lg font-semibold rounded-full border border-white/10 hover:bg-white/5">
-                Download Baseline Report
+              <Button asChild variant="ghost" className="h-14 px-8 text-lg font-semibold rounded-full border border-white/10 hover:bg-white/5">
+                <Link href="#features">Explore Features</Link>
               </Button>
             </div>
             <div className="pt-8 flex items-center gap-6">
@@ -68,20 +69,20 @@ export default function LandingPage() {
           <div className="relative aspect-square lg:aspect-auto h-[600px]">
             <div className="absolute inset-0 rounded-3xl overflow-hidden glass-card">
               <Image 
-                src="https://picsum.photos/seed/urbanhero/1200/1200" 
+                src="/images/urban_hero_grid_1774677411990.png" 
                 alt="City Grid Data Visualization" 
                 fill 
                 className="object-cover opacity-60"
                 data-ai-hint="isometric city"
               />
-              <div className="absolute top-10 left-10 glass-card p-6 rounded-2xl animate-bounce">
+              <div className="absolute top-10 left-10 glass-card p-6 rounded-2xl animate-bounce transform-gpu will-change-transform shadow-2xl">
                 <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">High Flood Risk</p>
                 <p className="text-2xl font-bold">84% Severity</p>
                 <div className="h-1 w-full bg-white/10 rounded-full mt-2">
                   <div className="h-full w-4/5 bg-primary rounded-full" />
                 </div>
               </div>
-              <div className="absolute bottom-20 right-10 glass-card p-6 rounded-2xl animate-pulse">
+              <div className="absolute bottom-20 right-10 glass-card p-6 rounded-2xl animate-pulse transform-gpu will-change-transform shadow-2xl">
                 <p className="text-xs font-bold uppercase tracking-wider text-secondary mb-2">Live Heat Index</p>
                 <p className="text-2xl font-bold">104°F Peak</p>
                 <p className="text-xs text-secondary mt-1">+12% vs Historical Avg</p>
@@ -119,8 +120,10 @@ export default function LandingPage() {
 
       {/* AI Tool Section */}
       <section className="py-24" id="ai-tool">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6 space-y-32">
           <RiskAssessmentTool />
+          <ScenarioPlanningTool />
+          <GrantReportingTool />
         </div>
       </section>
 
@@ -132,14 +135,14 @@ export default function LandingPage() {
               title: "Hyperlocal Risk Maps",
               badge: "Visibility",
               desc: "Go beyond city-wide averages. Our platform maps risks down to the block level, accounting for micro-topography, surface permeability, and building materials.",
-              img: "https://picsum.photos/seed/mapview/800/600",
+              img: "/images/mapview_hyperlocal_1774677425431.png",
               features: ["Street-level resolution", "20+ Hazard Layers", "Real-time updates"]
             },
             {
               title: "Scenario Planning & Economic Impact",
               badge: "Intelligence",
               desc: "Simulate the ROI of a new seawall vs. green infrastructure. See exactly how many businesses and homes are saved in a 1-in-100 year storm.",
-              img: "https://picsum.photos/seed/scenario/800/600",
+              img: "/images/scenario_planning_1774677437551.png",
               features: ["Multi-climate simulation", "ROI calculator", "Asset vulnerability index"],
               reverse: true
             },
@@ -147,7 +150,7 @@ export default function LandingPage() {
               title: "Stakeholder-Ready Dashboards",
               badge: "Transparency",
               desc: "Generate professional reports for city council, FEMA, and the public with one click. High-integrity data formatted for compliance and grants.",
-              img: "https://picsum.photos/seed/dash/800/600",
+              img: "/images/stakeholder_dashboard_1774677451898.png",
               features: ["One-click grant reporting", "Interactive public portals", "Department-wide sync"]
             }
           ].map((feature, idx) => (
@@ -206,25 +209,15 @@ export default function LandingPage() {
                   ))}
                 </ul>
                 <Button 
+                  asChild
                   variant={tier.featured ? "default" : "outline"} 
                   className={cn("w-full h-12 font-bold rounded-full")}
                 >
-                  Select Plan
+                  <Link href="/onboarding">Select Plan</Link>
                 </Button>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Demo Form Section */}
-      <section className="py-24 hero-gradient border-t border-white/10" id="demo">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8">
-            <h2 className="text-4xl lg:text-5xl font-bold font-headline">Ready to build a <span className="text-primary">Resilient Future?</span></h2>
-            <p className="text-xl text-muted-foreground">Join 50+ innovative cities transforming their climate strategy with high-fidelity AI analytics.</p>
-          </div>
-          <DemoRequestForm />
         </div>
       </section>
 

@@ -91,7 +91,7 @@ export function DemoRequestForm() {
             <h3 className="text-xl font-bold">Tell us about your organization</h3>
             <div className="space-y-2">
               <Label htmlFor="role">Your Role</Label>
-              <Select onValueChange={(val) => setValue("role", val)}>
+              <Select onValueChange={(val) => setValue("role", val, { shouldValidate: true })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>

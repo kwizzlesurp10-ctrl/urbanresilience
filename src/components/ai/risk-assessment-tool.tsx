@@ -5,7 +5,7 @@ import { Sparkles, MapPin, Users, Building2, Loader2, RefreshCcw } from "lucide-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { generateRiskAssessmentSnippet } from "@/ai/flows/personalized-risk-assessment-snippet-flow"
+import { generateRiskAssessmentSnippetAction } from "@/app/actions"
 import { cn } from "@/lib/utils"
 
 export function RiskAssessmentTool() {
@@ -33,7 +33,7 @@ export function RiskAssessmentTool() {
     if (!location || !population) return
     setIsLoading(true)
     try {
-      const snippet = await generateRiskAssessmentSnippet({
+      const snippet = await generateRiskAssessmentSnippetAction({
         location,
         population,
         infrastructureTypes: infrastructure.length > 0 ? infrastructure : ["general urban infrastructure"]

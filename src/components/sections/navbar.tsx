@@ -51,8 +51,8 @@ export function Navbar() {
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-semibold">
-            Request Demo
+          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full font-semibold">
+            <Link href="/onboarding">Request Demo</Link>
           </Button>
         </div>
 
@@ -74,7 +74,9 @@ export function Navbar() {
           <Link href="#solutions" onClick={() => setIsOpen(false)} className="text-lg font-medium">Solutions</Link>
           <Link href="#case-studies" onClick={() => setIsOpen(false)} className="text-lg font-medium">Case Studies</Link>
           <Link href="#pricing" onClick={() => setIsOpen(false)} className="text-lg font-medium">Pricing</Link>
-          <Button className="w-full bg-primary text-primary-foreground">Request Demo</Button>
+          <Button asChild className="w-full bg-primary text-primary-foreground">
+            <Link href="/onboarding" onClick={() => setIsOpen(false)}>Request Demo</Link>
+          </Button>
         </div>
       )}
     </nav>
