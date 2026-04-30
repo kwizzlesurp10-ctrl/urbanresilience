@@ -26,7 +26,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     const data = await runScenarioSimulation(parsed.data);
     return NextResponse.json(ok(data));
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Simulation failed';
+    const message =
+      e instanceof Error
+        ? e.message.trim() || e.name || 'Simulation failed'
+        : typeof e === 'string'
+          ? e
+          : `Simulation failed: ${JSON.stringify(e)}`;
     return NextResponse.json(err({ code: 'UPSTREAM_ERROR', message }), { status: 502 });
   }
 }

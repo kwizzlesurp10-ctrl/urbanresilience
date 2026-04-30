@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { type ScenarioSimulatorOutput, type ScenarioSimulatorInput } from '@/ai/flows/scenario-simulator-flow';
-import { postJson } from '@/lib/api-client';
+import { formatPostJsonError, postJson } from '@/lib/api-client';
+import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,7 +44,17 @@ export function ScenarioPlanningTool() {
       };
       const outcome = await postJson<ScenarioSimulatorOutput>('/api/scenario-planning', input);
       if (!outcome.ok) {
-        console.error('Simulation API error', outcome.error);
+        const msg = formatPostJsonError(outcome.error);
+        console.error('Simulation API error', {
+          status: outcome.error.status,
+          detail: outcome.error.body,
+          message: msg,
+        });
+        toast({
+          title: 'Simulation failed',
+          description: msg,
+          variant: 'destructive',
+        });
         return;
       }
       setResult(outcome.data);

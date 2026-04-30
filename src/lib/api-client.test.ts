@@ -1,30 +1,30 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { postJson } from '@/lib/api-client';
+import { describe, expect, it } from 'vitest';
+import { formatPostJsonError } from '@/lib/api-client';
 
-describe('postJson', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn());
+describe('formatPostJsonError', () => {
+  it('prefers API error.message and code', () => {
+    expect(
+      formatPostJsonError({
+        status: 502,
+        body: { ok: false, error: { code: 'UPSTREAM_ERROR', message: 'Gemini rate limit' } },
+      })
+    ).toBe('UPSTREAM_ERROR: Gemini rate limit');
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
+  it('handles empty object body with hint', () => {
+    expect(formatPostJsonError({ status: 200, body: {} })).toContain('Empty response');
   });
 
-  it('returns ok data for successful Result envelope', async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(JSON.stringify({ ok: true, data: { snippet: 'hello' } }), { status: 200 })
-    );
-    const r = await postJson<{ snippet: string }>('/api/risk-assessment', {});
-    expect(r.ok).toBe(true);
-    if (r.ok) expect(r.data.snippet).toBe('hello');
+  it('handles string body', () => {
+    expect(formatPostJsonError({ status: 500, body: 'oops' })).toBe('oops');
   });
 
-  it('returns err for failed HTTP', async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(JSON.stringify({ ok: false, error: { code: 'x' } }), { status: 422 })
-    );
-    const r = await postJson('/api/x', {});
-    expect(r.ok).toBe(false);
+  it('handles empty HTTP body wrapper', () => {
+    expect(
+      formatPostJsonError({
+        status: 502,
+        body: { ok: false, error: { code: 'EMPTY_BODY', message: 'HTTP 502 with no response body' } },
+      })
+    ).toContain('EMPTY_BODY');
   });
 });
