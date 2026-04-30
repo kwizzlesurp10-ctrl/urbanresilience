@@ -5,7 +5,7 @@ import { Sparkles, MapPin, Users, Building2, Loader2, RefreshCcw } from "lucide-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { generateRiskAssessmentSnippetAction } from "@/app/actions"
+import { postJson } from "@/lib/api-client"
 import { cn } from "@/lib/utils"
 
 export function RiskAssessmentTool() {
@@ -33,12 +33,19 @@ export function RiskAssessmentTool() {
     if (!location || !population) return
     setIsLoading(true)
     try {
-      const snippet = await generateRiskAssessmentSnippetAction({
+      const infraPayload =
+        infrastructure.length > 0 ? infrastructure : (["general urban infrastructure"] as string[])
+      const outcome = await postJson<{ snippet: string }>("/api/risk-assessment", {
         location,
         population,
-        infrastructureTypes: infrastructure.length > 0 ? infrastructure : ["general urban infrastructure"]
+        infrastructureTypes: infraPayload,
       })
-      setResult(snippet)
+      if (!outcome.ok) {
+        console.error("Risk assessment API error", outcome.error)
+        setResult("We could not generate a preview right now. Please try again in a moment.")
+        return
+      }
+      setResult(outcome.data.snippet)
     } catch (error) {
       console.error(error)
     } finally {

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { type ScenarioSimulatorOutput, type ScenarioSimulatorInput } from '@/ai/flows/scenario-simulator-flow';
-import { runScenarioSimulationAction } from '@/app/actions';
+import { postJson } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -36,12 +36,17 @@ export function ScenarioPlanningTool() {
     if (!regionName || budgetMillions < 1) return;
     setIsLoading(true);
     try {
-      const output = await runScenarioSimulationAction({ 
-        regionName, 
-        intervention: intervention as any, 
-        budgetMillions 
-      });
-      setResult(output);
+      const input: ScenarioSimulatorInput = {
+        regionName,
+        intervention: intervention as ScenarioSimulatorInput['intervention'],
+        budgetMillions,
+      };
+      const outcome = await postJson<ScenarioSimulatorOutput>('/api/scenario-planning', input);
+      if (!outcome.ok) {
+        console.error('Simulation API error', outcome.error);
+        return;
+      }
+      setResult(outcome.data);
     } catch (err) {
       console.error('Simulation Failed', err);
     } finally {
