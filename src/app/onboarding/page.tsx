@@ -1,4 +1,4 @@
-import { DemoRequestForm } from "@/components/forms/demo-request-form";
+import { DemoRequestForm } from "@/components/DemoRequestForm";
 import { ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/sections/navbar";
 

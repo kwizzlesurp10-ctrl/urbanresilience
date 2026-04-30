@@ -1,26 +1,15 @@
 import Image from "next/image"
 import Link from "next/link"
-import { 
-  BarChart3, 
-  Map as MapIcon, 
-  TrendingUp, 
-  Users2, 
-  AlertTriangle, 
-  FileWarning, 
-  Zap, 
-  Timer, 
-  ArrowRight, 
-  CheckCircle2,
-  ShieldCheck,
-  Globe,
-  Database,
-  ChevronDown
-} from "lucide-react"
+import { AlertTriangle, CheckCircle2, Database, FileWarning, ShieldCheck, Timer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/sections/navbar"
-import { RiskAssessmentTool } from "@/components/ai/risk-assessment-tool"
-import { ScenarioPlanningTool } from "@/components/ai/scenario-planning-tool"
-import { GrantReportingTool } from "@/components/ai/grant-reporting-tool"
+import { HeroMap } from "@/components/HeroMap"
+import { SolutionsSection } from "@/components/sections/SolutionsSection"
+import { CaseStudiesSection } from "@/components/sections/CaseStudiesSection"
+import { AnimatedStatsSection } from "@/components/sections/AnimatedStatsSection"
+import { RiskAssessmentTool } from "@/components/RiskAssessmentTool"
+import { ScenarioPlanningTool } from "@/components/ScenarioPlanningTool"
+import { GrantReportingTool } from "@/components/GrantReportingTool"
 import { 
   Accordion, 
   AccordionContent, 
@@ -67,30 +56,12 @@ export default function LandingPage() {
           </div>
 
           <div className="relative aspect-square lg:aspect-auto h-[600px]">
-            <div className="absolute inset-0 rounded-3xl overflow-hidden glass-card">
-              <Image 
-                src="/images/urban_hero_grid_1774677411990.png" 
-                alt="City Grid Data Visualization" 
-                fill 
-                className="object-cover opacity-60"
-                data-ai-hint="isometric city"
-              />
-              <div className="absolute top-10 left-10 glass-card p-6 rounded-2xl animate-bounce transform-gpu will-change-transform shadow-2xl">
-                <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">High Flood Risk</p>
-                <p className="text-2xl font-bold">84% Severity</p>
-                <div className="h-1 w-full bg-white/10 rounded-full mt-2">
-                  <div className="h-full w-4/5 bg-primary rounded-full" />
-                </div>
-              </div>
-              <div className="absolute bottom-20 right-10 glass-card p-6 rounded-2xl animate-pulse transform-gpu will-change-transform shadow-2xl">
-                <p className="text-xs font-bold uppercase tracking-wider text-secondary mb-2">Live Heat Index</p>
-                <p className="text-2xl font-bold">104°F Peak</p>
-                <p className="text-xs text-secondary mt-1">+12% vs Historical Avg</p>
-              </div>
-            </div>
+            <HeroMap className="glass-card" />
           </div>
         </div>
       </section>
+
+      <AnimatedStatsSection />
 
       {/* Problem Section */}
       <section className="py-24 bg-background">
@@ -117,6 +88,10 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <SolutionsSection />
+
+      <CaseStudiesSection />
 
       {/* AI Tool Section */}
       <section className="py-24" id="ai-tool">

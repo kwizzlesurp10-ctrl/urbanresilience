@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "@/hooks/use-toast"
+import { postJson } from "@/lib/api-client"
 
 const formSchema = z.object({
   role: z.string().min(1, "Role is required"),
@@ -28,6 +29,7 @@ type FormData = z.infer<typeof formSchema>
 export function DemoRequestForm() {
   const [step, setStep] = React.useState(1)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [welcomeMessage, setWelcomeMessage] = React.useState<string | null>(null)
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -44,15 +46,27 @@ export function DemoRequestForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log(data)
-    setIsSubmitting(false)
+    setWelcomeMessage(null)
+    try {
+      const welcome = await postJson<{ message: string; source?: string }>("/api/onboarding-welcome", {
+        organization: data.organization,
+        role: data.role,
+        region: data.region,
+        name: data.name,
+      })
+      if (welcome.ok) {
+        setWelcomeMessage(welcome.data.message)
+      }
+    } catch {
+      setWelcomeMessage(null)
+    } finally {
+      setIsSubmitting(false)
+    }
     toast({
       title: "Demo Requested!",
       description: "Our urban resilience team will contact you within 24 hours.",
     })
-    setStep(4) // Success state
+    setStep(4)
   }
 
   const challengesOptions = [
@@ -65,12 +79,17 @@ export function DemoRequestForm() {
 
   if (step === 4) {
     return (
-      <div className="text-center py-12 px-6 glass-card rounded-2xl">
+      <div className="text-center py-12 px-6 glass-card rounded-2xl space-y-4">
         <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
           <Check className="text-primary w-8 h-8" />
         </div>
         <h3 className="text-2xl font-bold mb-2">Thank you, {watch("name")}!</h3>
         <p className="text-muted-foreground">We've received your request for {watch("organization")}. A specialist will be in touch shortly.</p>
+        {welcomeMessage && (
+          <p className="text-sm leading-relaxed text-foreground/90 border border-white/10 rounded-xl p-4 text-left bg-background/40">
+            {welcomeMessage}
+          </p>
+        )}
       </div>
     )
   }

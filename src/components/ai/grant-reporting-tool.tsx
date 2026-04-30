@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { type GrantReportOutput, type GrantReportInput } from '@/ai/flows/grant-report-generator-flow';
-import { generateGrantReportAction } from '@/app/actions';
+import { postJson } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,12 +25,17 @@ export function GrantReportingTool() {
     if (!projectName || !funding || funding < 0.1) return;
     setIsLoading(true);
     try {
-      const output = await generateGrantReportAction({ 
-        projectName, 
-        grantType: grantType as any, 
-        fundingRequested: funding 
-      });
-      setResult(output);
+      const input: GrantReportInput = {
+        projectName,
+        grantType: grantType as GrantReportInput['grantType'],
+        fundingRequested: funding,
+      };
+      const outcome = await postJson<GrantReportOutput>('/api/grant-report', input);
+      if (!outcome.ok) {
+        console.error('Grant report API error', outcome.error);
+        return;
+      }
+      setResult(outcome.data);
     } catch (err) {
       console.error('Report Generation Failed', err);
     } finally {
