@@ -69,3 +69,35 @@
   background: radial-gradient(circle at top right, hsl(var(--primary) / 0.15), transparent),
               radial-gradient(circle at bottom left, hsl(var(--secondary) / 0.1), transparent);
 }
+
+/* MapLibre controls — glass chips to match hero UI */
+.maplibregl-ctrl-group {
+  background: hsl(var(--card) / 0.88) !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 4px 24px hsl(0 0% 0% / 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid hsl(var(--border) / 0.5) !important;
+}
+
+.maplibregl-ctrl-scale-line {
+  background: hsl(var(--card) / 0.88) !important;
+  border: 1px solid hsl(var(--border) / 0.6) !important;
+  border-radius: calc(var(--radius) - 2px);
+  padding: 2px 6px;
+  font-size: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.maplibregl-ctrl-attrib {
+  background: transparent !important;
+  font-size: 10px;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: hsl(var(--primary)) !important;
+}

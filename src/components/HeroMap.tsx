@@ -23,7 +23,7 @@ export function HeroMap({ className }: HeroMapProps) {
   return (
     <div className={cn('relative h-[600px] w-full overflow-hidden rounded-3xl', className)}>
       <div className="absolute inset-0">
-        <MapLibreRiskMap className="h-full w-full" centerLng={-80.1918} centerLat={25.7617} initialZoom={10.2} />
+        <MapLibreRiskMap className="h-full w-full rounded-3xl" centerLng={-80.1918} centerLat={25.7617} initialZoom={10.2} />
       </div>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
       <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/10 rounded-3xl" />
