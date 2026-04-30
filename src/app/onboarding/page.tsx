@@ -18,7 +18,7 @@ export default function OnboardingPage() {
               <span className="text-sm font-bold uppercase tracking-widest">Enterprise Onboarding</span>
             </div>
             <h1 className="text-5xl lg:text-7xl font-bold font-headline leading-tight">
-              Secure Your City's <span className="text-primary block">Resilient Future.</span>
+              Secure Your City&apos;s <span className="text-primary block">Resilient Future.</span>
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Join 50+ innovative cities transforming their climate strategy with high-fidelity AI analytics. Complete the onboarding request below to initialize your dedicated simulation environment.

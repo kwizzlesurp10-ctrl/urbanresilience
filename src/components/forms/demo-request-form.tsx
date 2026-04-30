@@ -39,6 +39,7 @@ export function DemoRequestForm() {
     }
   })
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- RHF watch() cannot be memoized safely
   const currentChallenges = watch("challenges")
 
   const nextStep = () => setStep(s => s + 1)
@@ -84,7 +85,7 @@ export function DemoRequestForm() {
           <Check className="text-primary w-8 h-8" />
         </div>
         <h3 className="text-2xl font-bold mb-2">Thank you, {watch("name")}!</h3>
-        <p className="text-muted-foreground">We've received your request for {watch("organization")}. A specialist will be in touch shortly.</p>
+        <p className="text-muted-foreground">We&apos;ve received your request for {watch("organization")}. A specialist will be in touch shortly.</p>
         {welcomeMessage && (
           <p className="text-sm leading-relaxed text-foreground/90 border border-white/10 rounded-xl p-4 text-left bg-background/40">
             {welcomeMessage}

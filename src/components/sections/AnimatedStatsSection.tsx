@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Activity, Globe2, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -18,16 +18,26 @@ const stats: Stat[] = [
   { label: 'Model refresh cadence', value: 24, suffix: 'h', prefix: '<', icon: Activity },
 ];
 
+function subscribePrefersReducedMotion(onStoreChange: () => void): () => void {
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mq.addEventListener('change', onStoreChange);
+  return () => mq.removeEventListener('change', onStoreChange);
+}
+
+function getPrefersReducedMotionSnapshot(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function getPrefersReducedMotionServerSnapshot(): boolean {
+  return false;
+}
+
 function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReduced(mq.matches);
-    const fn = () => setReduced(mq.matches);
-    mq.addEventListener('change', fn);
-    return () => mq.removeEventListener('change', fn);
-  }, []);
-  return reduced;
+  return useSyncExternalStore(
+    subscribePrefersReducedMotion,
+    getPrefersReducedMotionSnapshot,
+    getPrefersReducedMotionServerSnapshot
+  );
 }
 
 function AnimatedNumber({
@@ -43,25 +53,27 @@ function AnimatedNumber({
   durationMs: number;
   reducedMotion: boolean;
 }) {
-  const [display, setDisplay] = useState(reducedMotion ? target : 0);
+  const [animated, setAnimated] = useState(0);
   const startRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (reducedMotion) {
-      setDisplay(target);
       return;
     }
+    startRef.current = null;
     let frame: number;
     const step = (now: number) => {
       if (startRef.current === null) startRef.current = now;
       const t = Math.min(1, (now - startRef.current) / durationMs);
       const eased = 1 - (1 - t) ** 3;
-      setDisplay(Math.round(eased * target));
+      setAnimated(Math.round(eased * target));
       if (t < 1) frame = requestAnimationFrame(step);
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
   }, [target, durationMs, reducedMotion]);
+
+  const display = reducedMotion ? target : animated;
 
   return (
     <span className="tabular-nums">

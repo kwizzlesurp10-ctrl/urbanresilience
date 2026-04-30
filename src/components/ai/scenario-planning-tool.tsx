@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from '@/components/ui/chart';
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Activity, ShieldCheck, TrendingUp, DollarSign, BrainCircuit, Loader2 } from 'lucide-react';
 
 const interventions = ["Seawall Construction", "Mangrove Restoration", "Deep Tunnel Drainage", "Strategic Relocation"];
@@ -110,7 +110,9 @@ export function ScenarioPlanningTool() {
             </CardHeader>
             <CardContent className="space-y-6">
               <p className="text-foreground text-sm leading-relaxed border-l-2 border-primary pl-4 py-2 italic opacity-90">
-                "{result.executiveSummary}"
+                <span aria-hidden="true">&ldquo;</span>
+                {result.executiveSummary}
+                <span aria-hidden="true">&rdquo;</span>
               </p>
               
               <div className="grid grid-cols-2 gap-4 pt-2">

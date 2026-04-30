@@ -32,7 +32,7 @@ export default function LandingPage() {
               The Standard in Urban Resilience
             </Badge>
             <h1 className="text-5xl lg:text-7xl font-headline font-extrabold tracking-tight leading-[1.1]">
-              See Your City's <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Climate Weak Points</span> Before They Fail
+              See Your City&apos;s <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Climate Weak Points</span> Before They Fail
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
               Urban Resilience AI equips city planners with hyperlocal climate analytics, predictive scenario modeling, and stakeholder-ready reports to build future-proof infrastructure.

@@ -28,7 +28,7 @@ export function computeCityRiskScores(input: CityRiskScoreRequest): {
 
   let flood = 40 + (seed % 45);
   let heat = 35 + ((seed >> 3) % 50);
-  let infra = 30 + ((seed >> 6) % 55);
+  const infra = 30 + ((seed >> 6) % 55);
 
   if (coastal) {
     flood = Math.min(98, flood + 15);
