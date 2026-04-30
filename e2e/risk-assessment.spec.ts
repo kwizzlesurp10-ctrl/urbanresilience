@@ -5,11 +5,13 @@ test.describe('Urban Resilience AI Reliability Sandbox', () => {
     // Navigate to the main application
     await page.goto('/');
 
-    // Expect the Hero Grid to be visible
-    await expect(page.locator('text=High Flood Risk')).toBeVisible();
+    // Hero map chip (see HeroMap)
+    await expect(page.getByText('Flood + heat stress')).toBeVisible();
+
+    await page.locator('#ai-tool').scrollIntoViewIfNeeded();
 
     // Verify AI assessment tool section exists
-    await expect(page.locator('text=analyzes city-specific characteristics')).toBeVisible();
+    await expect(page.getByText(/analyzes city-specific characteristics/i)).toBeVisible();
 
     // Verify Generate button is ready and functional
     const generateBtn = page.locator('button:has-text("Generate Risk Snippet")');
