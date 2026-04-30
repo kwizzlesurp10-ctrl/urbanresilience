@@ -1,42 +1,48 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { cn } from '@/lib/utils';
 
-export type MapboxRiskMapProps = {
+/** MapLibre Style JSON URL — defaults to MapLibre demo vector tiles (no API key). */
+export const DEFAULT_MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json';
+
+export type MapLibreRiskMapProps = {
   className?: string;
   centerLng?: number;
   centerLat?: number;
   initialZoom?: number;
 };
 
-export function MapboxRiskMap({
+function resolveStyleUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_MAP_STYLE_URL?.trim();
+  return fromEnv && fromEnv.length > 0 ? fromEnv : DEFAULT_MAP_STYLE_URL;
+}
+
+export function MapLibreRiskMap({
   className,
   centerLng = -80.1918,
   centerLat = 25.7617,
   initialZoom = 10.5,
-}: MapboxRiskMapProps) {
+}: MapLibreRiskMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const styleUrl = resolveStyleUrl();
 
   useEffect(() => {
-    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
-    if (!containerRef.current || !token) {
+    if (!containerRef.current) {
       return;
     }
 
-    mapboxgl.accessToken = token;
-    const map = new mapboxgl.Map({
+    const map = new maplibregl.Map({
       container: containerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
+      style: styleUrl,
       center: [centerLng, centerLat],
       zoom: initialZoom,
-      attributionControl: true,
     });
 
-    map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
     mapRef.current = map;
 
     map.on('load', () => {
@@ -105,20 +111,7 @@ export function MapboxRiskMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [centerLng, centerLat, initialZoom]);
-
-  if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
-    return (
-      <div
-        className={cn(
-          'flex h-full min-h-[320px] w-full items-center justify-center rounded-2xl border border-dashed border-white/20 bg-black/40 p-6 text-center text-sm text-muted-foreground',
-          className
-        )}
-      >
-        Set NEXT_PUBLIC_MAPBOX_TOKEN to enable the live risk map.
-      </div>
-    );
-  }
+  }, [centerLng, centerLat, initialZoom, styleUrl]);
 
   return <div ref={containerRef} className={cn('h-full min-h-[320px] w-full', className)} />;
 }
