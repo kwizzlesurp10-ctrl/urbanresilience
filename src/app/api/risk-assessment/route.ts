@@ -35,7 +35,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
     return NextResponse.json(ok({ snippet: text }));
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Generation failed';
+    const message =
+      e instanceof Error
+        ? e.message.trim() || e.name || 'Generation failed'
+        : typeof e === 'string'
+          ? e
+          : `Generation failed: ${JSON.stringify(e)}`;
     return NextResponse.json(err({ code: 'UPSTREAM_ERROR', message }), { status: 502 });
   }
 }

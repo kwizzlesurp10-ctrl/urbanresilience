@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { type GrantReportOutput, type GrantReportInput } from '@/ai/flows/grant-report-generator-flow';
-import { postJson } from '@/lib/api-client';
+import { formatPostJsonError, postJson } from '@/lib/api-client';
+import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -32,7 +33,17 @@ export function GrantReportingTool() {
       };
       const outcome = await postJson<GrantReportOutput>('/api/grant-report', input);
       if (!outcome.ok) {
-        console.error('Grant report API error', outcome.error);
+        const msg = formatPostJsonError(outcome.error);
+        console.error('Grant report API error', {
+          status: outcome.error.status,
+          detail: outcome.error.body,
+          message: msg,
+        });
+        toast({
+          title: 'Grant report failed',
+          description: msg,
+          variant: 'destructive',
+        });
         return;
       }
       setResult(outcome.data);

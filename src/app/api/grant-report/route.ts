@@ -26,7 +26,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     const data = await generateGrantReport(parsed.data);
     return NextResponse.json(ok(data));
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'Report generation failed';
+    const message =
+      e instanceof Error
+        ? e.message.trim() || e.name || 'Report generation failed'
+        : typeof e === 'string'
+          ? e
+          : `Report generation failed: ${JSON.stringify(e)}`;
     return NextResponse.json(err({ code: 'UPSTREAM_ERROR', message }), { status: 502 });
   }
 }

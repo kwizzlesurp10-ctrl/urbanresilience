@@ -5,7 +5,8 @@ import { Sparkles, MapPin, Users, Building2, Loader2, RefreshCcw } from "lucide-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { postJson } from "@/lib/api-client"
+import { formatPostJsonError, postJson } from "@/lib/api-client"
+import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 export function RiskAssessmentTool() {
@@ -41,8 +42,18 @@ export function RiskAssessmentTool() {
         infrastructureTypes: infraPayload,
       })
       if (!outcome.ok) {
-        console.error("Risk assessment API error", outcome.error)
-        setResult("We could not generate a preview right now. Please try again in a moment.")
+        const msg = formatPostJsonError(outcome.error)
+        console.error("Risk assessment API error", {
+          status: outcome.error.status,
+          detail: outcome.error.body,
+          message: msg,
+        })
+        toast({
+          title: "Risk preview failed",
+          description: msg,
+          variant: "destructive",
+        })
+        setResult(null)
         return
       }
       setResult(outcome.data.snippet)
