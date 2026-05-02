@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -66,9 +65,7 @@ export function MapLibreRiskMap({
     if (!containerRef.current) {
       return;
     }
-
     queueMicrotask(() => setMapError(null));
-
     const reduceMotion =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -95,11 +92,11 @@ export function MapLibreRiskMap({
     map.on('error', onError);
 
     map.on('load', () => {
+      // ── Risk heatmap (inline GeoJSON) ──────────────────────────────────────
       map.addSource('risk-heatmap', {
         type: 'geojson',
         data: buildRiskFeatures(centerLng, centerLat),
       });
-
       map.addLayer({
         id: 'risk-heat',
         type: 'heatmap',
@@ -113,18 +110,43 @@ export function MapLibreRiskMap({
             'interpolate',
             ['linear'],
             ['heatmap-density'],
-            0,
-            'rgba(16, 204, 247, 0)',
-            0.25,
-            'rgba(16, 204, 247, 0.35)',
-            0.45,
-            'rgba(140, 248, 219, 0.55)',
-            0.65,
-            'rgba(253, 186, 120, 0.75)',
-            0.85,
-            'rgba(239, 68, 68, 0.9)',
-            1,
-            'rgba(185, 28, 28, 0.95)',
+            0, 'rgba(16, 204, 247, 0)',
+            0.25, 'rgba(16, 204, 247, 0.35)',
+            0.45, 'rgba(140, 248, 219, 0.55)',
+            0.65, 'rgba(253, 186, 120, 0.75)',
+            0.85, 'rgba(239, 68, 68, 0.9)',
+            1, 'rgba(185, 28, 28, 0.95)',
+          ],
+        },
+      });
+
+      // ── Carbon footprint heatmap (public/data/carbon-footprint.geojson) ───
+      // Data served from public/ — resolves at /data/carbon-footprint.geojson
+      // in both local dev and Vercel production.
+      map.addSource('carbon-data', {
+        type: 'geojson',
+        data: '/data/carbon-footprint.geojson',
+      });
+      map.addLayer({
+        id: 'carbon-heatmap',
+        type: 'heatmap',
+        source: 'carbon-data',
+        paint: {
+          // Weight each point by its carbon_footprint property value
+          'heatmap-weight': ['get', 'carbon_footprint'],
+          'heatmap-radius': 20,
+          'heatmap-intensity': 1,
+          'heatmap-opacity': 0.85,
+          'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0,   'rgba(33, 102, 172, 0)',
+            0.2, 'rgb(103, 169, 207)',
+            0.4, 'rgb(209, 229, 240)',
+            0.6, 'rgb(253, 219, 199)',
+            0.8, 'rgb(239, 138, 98)',
+            1,   'rgb(178, 24, 43)',
           ],
         },
       });
@@ -132,9 +154,7 @@ export function MapLibreRiskMap({
 
     const ro =
       typeof ResizeObserver !== 'undefined'
-        ? new ResizeObserver(() => {
-            map.resize();
-          })
+        ? new ResizeObserver(() => { map.resize(); })
         : null;
     ro?.observe(containerRef.current);
 
@@ -147,21 +167,17 @@ export function MapLibreRiskMap({
   }, [centerLng, centerLat, initialZoom, styleUrl]);
 
   return (
-    <div className={cn('relative h-full min-h-[320px] w-full', className)}>
-      <div ref={containerRef} className="absolute inset-0 overflow-hidden rounded-[inherit]" />
+    <div className={cn('relative h-full w-full', className)}>
       {mapError ? (
-        <div
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-[inherit] bg-background/90 px-6 text-center text-sm text-muted-foreground backdrop-blur-sm"
-          role="alert"
-        >
-          <p className="font-medium text-foreground">Could not load the map</p>
-          <p className="max-w-sm text-xs leading-relaxed">{mapError}</p>
-          <p className="text-xs opacity-80">
-            Set <code className="rounded bg-muted px-1 py-0.5">NEXT_PUBLIC_MAP_STYLE_URL</code> to a valid
-            MapLibre style JSON if this persists.
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-background/80 p-6 text-center">
+          <p className="font-semibold text-destructive">Could not load the map</p>
+          <p className="text-sm text-muted-foreground">{mapError}</p>
+          <p className="text-xs text-muted-foreground">
+            Set `NEXT_PUBLIC_MAP_STYLE_URL` to a valid MapLibre style JSON if this persists.
           </p>
         </div>
       ) : null}
+      <div ref={containerRef} className="h-full w-full" />
     </div>
   );
 }
