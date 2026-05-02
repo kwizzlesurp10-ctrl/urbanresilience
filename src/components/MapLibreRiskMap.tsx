@@ -5,10 +5,20 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { cn } from '@/lib/utils';
 
 /**
- * OpenFreeMap dark vector style — free, MapLibre-native, no API key.
+ * Default tile style — OpenFreeMap dark vector, free, no API key required.
+ * Automatically overridden when NEXT_PUBLIC_MAPBOX_TOKEN is set:
+ *   => uses Mapbox Streets v12 via the MapLibre-compatible endpoint.
+ * Can also be overridden directly via NEXT_PUBLIC_MAP_STYLE_URL.
  * @see https://openfreemap.org/quick_start
+ * @see https://docs.mapbox.com/api/maps/styles/
  */
 export const DEFAULT_MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark';
+
+/**
+ * Mapbox style slug to use when a Mapbox token is present.
+ * Swap to 'mapbox://styles/mapbox/satellite-streets-v12' etc. as needed.
+ */
+const MAPBOX_DEFAULT_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
 export type MapLibreRiskMapProps = {
   className?: string;
@@ -17,9 +27,50 @@ export type MapLibreRiskMapProps = {
   initialZoom?: number;
 };
 
+/**
+ * Priority order for the map style URL:
+ *  1. NEXT_PUBLIC_MAP_STYLE_URL  — explicit full URL override
+ *  2. NEXT_PUBLIC_MAPBOX_TOKEN   — auto-builds Mapbox style URL + injects token
+ *  3. DEFAULT_MAP_STYLE_URL      — OpenFreeMap dark fallback (no key needed)
+ */
 function resolveStyleUrl(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_MAP_STYLE_URL?.trim();
-  return fromEnv && fromEnv.length > 0 ? fromEnv : DEFAULT_MAP_STYLE_URL;
+  const explicit = process.env.NEXT_PUBLIC_MAP_STYLE_URL?.trim();
+  if (explicit && explicit.length > 0) return explicit;
+
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN?.trim();
+  if (mapboxToken && mapboxToken.length > 0) {
+    // MapLibre GL JS supports Mapbox styles natively when the token is
+    // supplied via the transformRequest callback set below.
+    return MAPBOX_DEFAULT_STYLE;
+  }
+
+  return DEFAULT_MAP_STYLE_URL;
+}
+
+/**
+ * Returns a MapLibre transformRequest function that injects the Mapbox
+ * access token into every request destined for Mapbox APIs/CDN.
+ * Returns undefined when no Mapbox token is configured (no-op path).
+ */
+function buildTransformRequest(
+  token: string | undefined,
+): maplibregl.RequestTransformFunction | undefined {
+  if (!token) return undefined;
+  return (url: string, resourceType: string) => {
+    // Inject token for all Mapbox tile, sprite, glyph and style endpoints
+    if (
+      resourceType === 'Tile' ||
+      resourceType === 'Glyphs' ||
+      resourceType === 'Source' ||
+      resourceType === 'SpriteImage' ||
+      resourceType === 'SpriteJSON' ||
+      resourceType === 'Style'
+    ) {
+      const separator = url.includes('?') ? '&' : '?';
+      return { url: `${url}${separator}access_token=${token}` };
+    }
+    return { url };
+  };
 }
 
 function buildRiskFeatures(centerLng: number, centerLat: number) {
@@ -59,6 +110,7 @@ export function MapLibreRiskMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const styleUrl = resolveStyleUrl();
+  const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN?.trim() || undefined;
   const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,6 +122,8 @@ export function MapLibreRiskMap({
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    const transformRequest = buildTransformRequest(mapboxToken);
+
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: styleUrl,
@@ -79,6 +133,7 @@ export function MapLibreRiskMap({
       bearing: reduceMotion ? 0 : -18,
       maxPitch: 72,
       attributionControl: { compact: true },
+      ...(transformRequest ? { transformRequest } : {}),
     });
 
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
@@ -110,29 +165,28 @@ export function MapLibreRiskMap({
             'interpolate',
             ['linear'],
             ['heatmap-density'],
-            0, 'rgba(16, 204, 247, 0)',
+            0,    'rgba(16, 204, 247, 0)',
             0.25, 'rgba(16, 204, 247, 0.35)',
             0.45, 'rgba(140, 248, 219, 0.55)',
             0.65, 'rgba(253, 186, 120, 0.75)',
             0.85, 'rgba(239, 68, 68, 0.9)',
-            1, 'rgba(185, 28, 28, 0.95)',
+            1,    'rgba(185, 28, 28, 0.95)',
           ],
         },
       });
 
       // ── Carbon footprint heatmap (public/data/carbon-footprint.geojson) ───
-      // Data served from public/ — resolves at /data/carbon-footprint.geojson
+      // Served from public/ — resolves to /data/carbon-footprint.geojson
       // in both local dev and Vercel production.
       map.addSource('carbon-data', {
         type: 'geojson',
-        data: '/data/carbon-footprint.geojson',
+        data: process.env.NEXT_PUBLIC_CARBON_DATA_URL || '/data/carbon-footprint.geojson',
       });
       map.addLayer({
         id: 'carbon-heatmap',
         type: 'heatmap',
         source: 'carbon-data',
         paint: {
-          // Weight each point by its carbon_footprint property value
           'heatmap-weight': ['get', 'carbon_footprint'],
           'heatmap-radius': 20,
           'heatmap-intensity': 1,
@@ -164,7 +218,7 @@ export function MapLibreRiskMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [centerLng, centerLat, initialZoom, styleUrl]);
+  }, [centerLng, centerLat, initialZoom, styleUrl, mapboxToken]);
 
   return (
     <div className={cn('relative h-full w-full', className)}>
@@ -173,7 +227,8 @@ export function MapLibreRiskMap({
           <p className="font-semibold text-destructive">Could not load the map</p>
           <p className="text-sm text-muted-foreground">{mapError}</p>
           <p className="text-xs text-muted-foreground">
-            Set `NEXT_PUBLIC_MAP_STYLE_URL` to a valid MapLibre style JSON if this persists.
+            Set <code>NEXT_PUBLIC_MAPBOX_TOKEN</code> for Mapbox tiles, or{' '}
+            <code>NEXT_PUBLIC_MAP_STYLE_URL</code> for a custom MapLibre style.
           </p>
         </div>
       ) : null}
