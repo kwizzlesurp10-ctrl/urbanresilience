@@ -18,7 +18,7 @@ export const DEFAULT_MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/dark'
  * Mapbox style slug to use when a Mapbox token is present.
  * Swap to 'mapbox://styles/mapbox/satellite-streets-v12' etc. as needed.
  */
-const MAPBOX_DEFAULT_STYLE = 'mapbox://styles/mapbox/dark-v11';
+const MAPBOX_DEFAULT_STYLE = 'https://api.mapbox.com/styles/v1/mapbox/dark-v11';
 
 export type MapLibreRiskMapProps = {
   className?: string;
@@ -39,9 +39,8 @@ function resolveStyleUrl(): string {
 
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN?.trim();
   if (mapboxToken && mapboxToken.length > 0) {
-    // MapLibre GL JS supports Mapbox styles natively when the token is
-    // supplied via the transformRequest callback set below.
-    return MAPBOX_DEFAULT_STYLE;
+        // HTTPS URL with token — MapLibre can fetch this directly
+    return `${MAPBOX_DEFAULT_STYLE}?access_token=${mapboxToken}`;
   }
 
   return DEFAULT_MAP_STYLE_URL;
