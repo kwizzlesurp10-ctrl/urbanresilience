@@ -29,7 +29,7 @@ export const grantReportRequestSchema = z.object({
     'EPA Environmental Justice',
     'State Infrastructure Bank',
   ]),
-  fundingRequested: z.number().min(1).max(1000000),
+  fundingRequested: z.number().min(0.1).max(500),
 });
 
 export const cityRiskScoreRequestSchema = z.object({
