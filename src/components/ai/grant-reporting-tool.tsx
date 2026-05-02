@@ -16,14 +16,14 @@ const grantTypes = ["FEMA BRIC", "HUD CDBG-MIT", "EPA Environmental Justice", "S
 export function GrantReportingTool() {
   const [projectName, setProjectName] = useState('');
   const [grantType, setGrantType] = useState(grantTypes[0]);
-  const [fundingRequested, setFundingRequested] = useState<string>('');
+  const [fundingRequested, setFundingRequested] = useState<string>('');   const [fundingError, setFundingError] = useState<string | null>(null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<GrantReportOutput | null>(null);
 
   const handleGenerate = async () => {
     const funding = parseFloat(fundingRequested);
-    if (!projectName || !funding || funding < 0.1) return;
+    setFundingError(null);     if (!projectName || !funding || funding < 0.1) {       setFundingError('Enter a value between 0.1 and 500 (in millions of dollars).');       return;     }     if (funding > 500) {       setFundingError('Maximum is 500 million dollars ($500M). Enter a value ≤ 500.');       return;     }
     setIsLoading(true);
     try {
       const input: GrantReportInput = {
@@ -79,9 +79,9 @@ export function GrantReportingTool() {
              </div>
              <div className="space-y-2">
                 <label className="text-xs font-semibold text-muted-foreground uppercase flex justify-between">
-                  <span>Funding Req (Millions)</span>
+                  <span>Funding Requested ($ Millions, max 500)</span>
                 </label>
-                <Input type="number" step="0.5" placeholder="e.g. 15.5" value={fundingRequested} onChange={e => setFundingRequested(e.target.value)} />
+                <Input type="number" step="0.5" placeholder="e.g. 15.5" value={fundingRequested} onChange={e => { setFundingRequested(e.target.value); setFundingError(null); }} />             {fundingError && (               <p className="text-xs text-red-500 mt-1">{fundingError}</p>             )}
              </div>
              <Button 
                 onClick={handleGenerate} disabled={isLoading || !projectName || !fundingRequested}
