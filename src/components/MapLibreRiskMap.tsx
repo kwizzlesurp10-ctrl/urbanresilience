@@ -56,7 +56,7 @@ function buildTransformRequest(
   token: string | undefined,
 ): maplibregl.RequestTransformFunction | undefined {
   if (!token) return undefined;
-  return (url: string, resourceType: string) => {
+  return (url: string, resourceType: maplibregl.ResourceType | undefined) => {
     // Inject token for all Mapbox tile, sprite, glyph and style endpoints
     if (
       resourceType === 'Tile' ||
