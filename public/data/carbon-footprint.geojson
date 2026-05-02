@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 1.8 },
+      "geometry": { "type": "Point", "coordinates": [-80.2318, 25.7817] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 2.4 },
+      "geometry": { "type": "Point", "coordinates": [-80.1518, 25.7417] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 1.2 },
+      "geometry": { "type": "Point", "coordinates": [-80.1918, 25.8017] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 3.1 },
+      "geometry": { "type": "Point", "coordinates": [-80.2118, 25.7217] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 0.9 },
+      "geometry": { "type": "Point", "coordinates": [-80.1718, 25.7617] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 2.7 },
+      "geometry": { "type": "Point", "coordinates": [-80.2018, 25.7517] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 1.5 },
+      "geometry": { "type": "Point", "coordinates": [-80.1618, 25.7717] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "carbon_footprint": 3.5 },
+      "geometry": { "type": "Point", "coordinates": [-80.2218, 25.7317] }
+    }
+  ]
+}
